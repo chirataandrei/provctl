@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-08-02T16:14:24.839595+00:00",
+  "repos_scored": 30,
+  "totals": {
+    "baseline": {
+      "block": 0,
+      "warn": 296,
+      "info": 55,
+      "ok": 2777
+    },
+    "all_agent": {
+      "block": 2,
+      "warn": 294,
+      "info": 55,
+      "ok": 2777
+    },
+    "all_human": {
+      "block": 0,
+      "warn": 296,
+      "info": 55,
+      "ok": 2777
+    },
+    "all_agent_reviewed": {
+      "block": 0,
+      "warn": 296,
+      "info": 55,
+      "ok": 2777
+    }
+  },
+  "changed_findings": [
+    {
+      "repo": "airflow",
+      "name": "apache-airflow-providers-anthropic",
+      "scenario": "all_agent",
+      "from": "warn",
+      "to": "block",
+      "reason": "suspicious_metadata"
+    },
+    {
+      "repo": "home-assistant",
+      "name": "aioharmanluxury",
+      "scenario": "all_agent",
+      "from": "warn",
+      "to": "block",
+      "reason": "suspicious_metadata"
+    }
+  ]
+}

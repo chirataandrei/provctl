@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.DS_Store
+
+# Cloned measurement corpus (~1.5 GB). Regenerate with:
+#   python -m measurements.run --clone
+.work/
+
+# Vendored binaries used only for adapter testing; never project dependencies.
+.tools/
+
+# Local repository state written by provctl itself.
+.provenance/decisions.jsonl.bak

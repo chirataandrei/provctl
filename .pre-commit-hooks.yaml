@@ -1,0 +1,24 @@
+- id: provctl
+  name: provctl (dependency provenance gate)
+  description: >-
+    Blocks dependencies that do not exist on PyPI and are not first-party.
+    Imports are advisory and never block.
+  entry: provctl check
+  language: python
+  # Runs once per commit rather than once per file: the check is about the
+  # change as a whole (a manifest entry and the import that motivated it are
+  # different files), and it reads the staged tree itself.
+  pass_filenames: false
+  always_run: true
+  stages: [pre-commit]
+
+- id: provctl-warn-only
+  name: provctl (report only, never blocks)
+  description: >-
+    Same checks, always exits zero. Use this for the first weeks of a rollout
+    so the team sees the signal before it can interrupt anyone.
+  entry: provctl check --warn-only
+  language: python
+  pass_filenames: false
+  always_run: true
+  stages: [pre-commit]
