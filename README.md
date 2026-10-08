@@ -1,5 +1,6 @@
 # provctl
 
+[![PyPI](https://img.shields.io/pypi/v/provctl)](https://pypi.org/project/provctl/)
 [![CI](https://github.com/chirataandrei/provctl/actions/workflows/ci.yml/badge.svg)](https://github.com/chirataandrei/provctl/actions/workflows/ci.yml)
 
 Pre-commit hook that blocks Python deps which don't exist on PyPI.
@@ -12,7 +13,7 @@ PyPI name list and fails the commit if the name isn't there and isn't yours.
 Lookups stay on disk. Package names are not sent to pypi.org during a check.
 
 ```console
-$ echo "fastapi-turbo-helper" >> requirements.txt && git add -A && git commit -m "add dep"
+$ echo "fastapi-turbo-helper" >> requirements.txt && git add -A && provctl check
 BLOCK fastapi-turbo-helper
        no project by this name exists on PyPI
        at requirements.txt:2
@@ -21,6 +22,9 @@ This commit is blocked. To proceed:
   - 'fastapi-turbo-helper' does not exist on PyPI. If the name is a typo, fix it.
     If it is an internal package, add it to .provenance/policy.toml
 ```
+
+As a pre-commit hook the same output appears when `git commit` runs and the
+commit is aborted.
 
 | Measured | Result |
 |---|---|
