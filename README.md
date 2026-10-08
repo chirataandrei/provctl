@@ -24,9 +24,9 @@ This commit is blocked. To proceed:
 
 | Measured | Result |
 |---|---|
-| Invented package names absent from PyPI, blocked | 68 / 68 |
-| Invented names already registered on PyPI (not catchable by a name check) | 2 / 70 |
-| Real popular packages wrongly blocked | 0 / 60 |
+| Invented package names absent from PyPI, blocked | 310 / 310 |
+| Invented names already registered on PyPI (not catchable by a name check) | 10 / 320 |
+| Real popular packages wrongly blocked | 0 / 499 |
 | Real OSS repos with a false block | 0 / 30 |
 | Time added to a commit | ~90 ms median |
 

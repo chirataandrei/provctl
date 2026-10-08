@@ -31,8 +31,10 @@ def latency(runs: int = 20) -> tuple[float, float]:
     times = []
     for _ in range(runs + 1):
         t = time.perf_counter()
-        subprocess.run([sys.executable, "-m", "provctl.cli", "check"], cwd=tmp,
-                       capture_output=True)
+        proc = subprocess.run([sys.executable, "-m", "provctl.cli", "check"], cwd=tmp,
+                              capture_output=True, text=True)
+        if proc.returncode not in (0, 1) or "summary" not in proc.stdout:  # failed run: timing it is meaningless
+            raise RuntimeError(f"provctl failed: {proc.stderr.strip()}")
         times.append((time.perf_counter() - t) * 1000)
     times = times[1:]  # drop cold start
     return statistics.median(times), max(times)

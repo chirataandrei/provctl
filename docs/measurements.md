@@ -168,24 +168,28 @@ claiming a real-world slopsquatting recall number is inventing it.**
 
 `python -m measurements.labelled`, data in `measurements/data/`.
 
-- 70 plausible-but-invented package names (`hallucinated_candidates.txt`),
+- 320 plausible-but-invented package names (`hallucinated_candidates.txt`),
   written by a language model asked to imitate names an assistant would make up.
   Label = "does not exist on PyPI" according to the local index.
-- 60 real, popular packages (`real_names.txt`).
+- 499 real packages (`real_names.txt`): 59 hand-picked popular ones plus a
+  seeded random sample (seed 0) of 440 from the top-5000 most downloaded.
 
 | | count | outcome |
 |---|---|---|
-| invented, absent from PyPI | 68 | **68 blocked** |
-| invented, already registered on PyPI | 2 (`playwright-captcha-solver`, `pydantic-settings-vault`) | not catchable by a name check |
-| real | 60 | **0 blocked** |
+| invented, absent from PyPI | 310 | **310 blocked** |
+| invented, already registered on PyPI | 10 | not catchable by a name check |
+| real | 499 | **0 blocked** |
 
-Overall: 68 of 70 invented names caught (97%). The two misses are the
-slopsquatting case itself — someone already registered the name — and no
-local existence check can see that; it needs reputation signals
-(age, downloads, maintainers), which is what the warn band is for.
-Caveats: 70 names is small, one generator, and the 68/68 is close to
-tautological (absent name -> block); the informative figure is how many
-invented names turn out to be already registered (2 of 70 here).
+Overall: 310 of 320 invented names caught (96.9%). The 10 misses
+(`python-dotenv-vault`, `pydantic-ai-helpers`, `scrapy-playwright-stealth`, ...)
+are the slopsquatting case itself: the name is already registered, and no
+local existence check can see that. Catching them needs reputation signals
+(age, downloads, maintainers), which is what the warn band is for; whether
+those 10 are benign or squatted was not investigated.
+Caveats: one generator (a single model, written in one sitting), so names are
+more uniform than real hallucinations; and 310/310 is close to tautological
+(absent name -> block). The informative figure is the registered fraction
+(3% here).
 
 ## Commit latency
 
