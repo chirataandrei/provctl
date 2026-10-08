@@ -59,7 +59,7 @@ pre-commit:
 ```yaml
 repos:
   - repo: https://github.com/chirataandrei/provctl
-    rev: v0.1.2
+    rev: v0.1.3
     hooks:
       - id: provctl
 ```
