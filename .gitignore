@@ -17,3 +17,4 @@ venv/
 
 # Local repository state written by provctl itself.
 .provenance/decisions.jsonl.bak
+.work/

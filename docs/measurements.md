@@ -5,6 +5,8 @@ Everything here is reproducible:
 ```bash
 provctl index refresh
 python -m measurements.run --clone   # 30 real OSS Python repositories
+python -m measurements.expand_corpus  # grow to 100 repos (fixed selection rule)
+python -m measurements.run --extended # measure all 100
 python -m measurements.band --enrich # sizes the provenance band
 python -m measurements.recall        # regression guard on synthetic negatives
 python -m measurements.labelled      # labelled set + commit latency
@@ -196,3 +198,29 @@ more uniform than real hallucinations; and 310/310 is close to tautological
 Median **91 ms** (worst 105 ms, 20 runs after a warm-up) for `provctl check`
 on a staged `requirements.txt` with 5 deps, including Python interpreter
 startup, on a laptop (macOS). Lookups are local; no network calls.
+
+## 100-repository run
+
+`measurements/expand_corpus.py` extends the 30 repos above to 100 using a fixed
+rule, so the choice is not cherry-picked: top GitHub Python repos by stars,
+<= 300 MB, not already in the corpus, and containing a dependency manifest
+(awesome-lists and tutorials without one are dropped). The 70 added repos are
+listed in `measurements/data/extra_repos.txt`; results in
+`measurements/out/baseline100.json`.
+
+| | |
+|---|---|
+| repos measured | 100 (0 failed) |
+| dependency findings | 6,141 |
+| blocks | **1**, in 1 of 100 repos |
+| warnings | 404 |
+
+The single block is `codecs` in
+`josephmisiti/awesome-machine-learning/scripts/requirements.txt`. `codecs` is a
+standard-library module, not a PyPI project (PyPI returns 404), so
+`pip install -r` on that file fails today and anyone could register the name.
+I count it as a true catch, not a false positive, but it is the one place where
+the "presumed clean" assumption is wrong, so the honest summary is "1 of 100 repos
+blocked, and the block is a real mistake", not "0 false positives". The 70 new
+repos skew toward recent AI/agent projects, which is the population most likely
+to contain invented names, and still yielded no false block.

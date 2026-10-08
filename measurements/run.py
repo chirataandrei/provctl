@@ -11,7 +11,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from measurements.corpus import CORPUS, Repo
+from measurements.corpus import CORPUS, Repo, extended
 from provctl.check import Checker, CheckOptions
 from provctl.index.store import IndexStore
 from provctl.model import Origin, Reason, Verdict
@@ -187,6 +187,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clone", action="store_true", help="clone missing repos first")
     parser.add_argument("--work-dir", default=str(WORK_DIR))
+    parser.add_argument("--extended", action="store_true", help="include extra_repos.txt")
     parser.add_argument("--limit", type=int, help="only measure the first N repos")
     parser.add_argument("--json-out", default=str(OUT_DIR / "baseline.json"))
     args = parser.parse_args(argv)
@@ -197,7 +198,8 @@ def main(argv: list[str] | None = None) -> int:
         print("error: no local index. Run `provctl index refresh` first.", file=sys.stderr)
         return 2
 
-    repos = list(CORPUS)[: args.limit] if args.limit else list(CORPUS)
+    base = list(extended() if args.extended else CORPUS)
+    repos = base[: args.limit] if args.limit else base
 
     if args.clone:
         print(f"Cloning {len(repos)} repositories into {work} ...")

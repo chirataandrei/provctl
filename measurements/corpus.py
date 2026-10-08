@@ -46,3 +46,17 @@ CORPUS: tuple[Repo, ...] = (
     Repo("dbt-core", "https://github.com/dbt-labs/dbt-core", notes="monorepo"),
     Repo("home-assistant", "https://github.com/home-assistant/core", notes="very large, many deps"),
 )
+
+
+def extended() -> tuple[Repo, ...]:
+    """CORPUS plus the repos chosen by measurements.expand_corpus, if present."""
+    from pathlib import Path
+
+    f = Path(__file__).parent / "data" / "extra_repos.txt"
+    extra = []
+    if f.exists():
+        for line in f.read_text().splitlines():
+            if line.strip():
+                name, url = line.split()
+                extra.append(Repo(name, url))
+    return CORPUS + tuple(extra)
