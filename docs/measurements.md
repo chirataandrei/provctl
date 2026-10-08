@@ -224,3 +224,20 @@ the "presumed clean" assumption is wrong, so the honest summary is "1 of 100 rep
 blocked, and the block is a real mistake", not "0 false positives". The 70 new
 repos skew toward recent AI/agent projects, which is the population most likely
 to contain invented names, and still yielded no false block.
+
+### The 401 "absent from index" findings (100-repo run)
+
+- **400 are imports, 1 is a manifest entry.** Imports only ever warn; the one
+  manifest entry is the `codecs` block above.
+- 376 distinct import names. Roughly 55 of them match a PyPI project under a
+  common alternative spelling (`miio` -> `python-miio`, `digitalocean` ->
+  `python-digitalocean`, `debian` -> `python-debian`): real dependencies whose
+  import name differs from the distribution name. This is a heuristic upper
+  bound, not a manual review: it also produces false matches (`git` -> `pygit`,
+  `api` -> `pyapi`).
+- Most of the rest are repo-internal: script and tool names (Airflow's
+  `check-*` hooks), test fixtures (`foo1`..`foo16`, `doesnotexist`,
+  `name-of-a-company`), vendor hardware SDKs (`habana-frameworks`,
+  `hailo-platform`), and Python 2 stdlib names (`htmlentitydefs`).
+- This is why imports never block: the import-to-distribution mapping is the
+  noisiest signal in the tool. The names were not individually verified.
