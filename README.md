@@ -11,21 +11,33 @@ PyPI name list and fails the commit if the name isn't there and isn't yours.
 
 Lookups stay on disk. Package names are not sent to pypi.org during a check.
 
-```
+```console
+$ echo "fastapi-turbo-helper" >> requirements.txt && git add -A && git commit -m "add dep"
 BLOCK fastapi-turbo-helper
        no project by this name exists on PyPI
-       at requirements.txt:12
+       at requirements.txt:2
+
+This commit is blocked. To proceed:
+  - 'fastapi-turbo-helper' does not exist on PyPI. If the name is a typo, fix it.
+    If it is an internal package, add it to .provenance/policy.toml
 ```
 
-Evaluated on 30 OSS Python repos: 0 false positives after monorepo / git-source
-fixes. Synthetic names still get blocked. I don't claim real-world recall —
-there's no public labelled slopsquatting dataset. Numbers:
-[docs/measurements.md](docs/measurements.md).
+| Measured | Result |
+|---|---|
+| Invented package names absent from PyPI, blocked | 68 / 68 |
+| Invented names already registered on PyPI (not catchable by a name check) | 2 / 70 |
+| Real popular packages wrongly blocked | 0 / 60 |
+| Real OSS repos with a false block | 0 / 30 |
+| Time added to a commit | ~90 ms median |
+
+The invented-name set is small and I wrote it myself (a model, imitating
+slopsquat-style names), so read it as a sanity check, not a benchmark.
+Method and caveats: [docs/measurements.md](docs/measurements.md).
 
 ## Install
 
 ```bash
-pip install "git+https://github.com/chirataandrei/provctl.git"
+pip install provctl
 provctl index refresh    # ~10 MB, once
 ```
 

@@ -7,6 +7,7 @@ provctl index refresh
 python -m measurements.run --clone   # 30 real OSS Python repositories
 python -m measurements.band --enrich # sizes the provenance band
 python -m measurements.recall        # regression guard on synthetic negatives
+python -m measurements.labelled      # labelled set + commit latency
 ```
 
 Corpus: 30 widely-used open-source Python projects (requests, Django, FastAPI,
@@ -162,3 +163,32 @@ claiming a real-world slopsquatting recall number is inventing it.**
 - Index on disk: 12.37 MB (vs 3.1 MB for a 1e-6 Bloom filter — 9 MB to buy
   correctness).
 - Full corpus scan, 30 repos including Airflow and Home Assistant: ~47s.
+
+## Labelled set: caught vs missed
+
+`python -m measurements.labelled`, data in `measurements/data/`.
+
+- 70 plausible-but-invented package names (`hallucinated_candidates.txt`),
+  written by a language model asked to imitate names an assistant would make up.
+  Label = "does not exist on PyPI" according to the local index.
+- 60 real, popular packages (`real_names.txt`).
+
+| | count | outcome |
+|---|---|---|
+| invented, absent from PyPI | 68 | **68 blocked** |
+| invented, already registered on PyPI | 2 (`playwright-captcha-solver`, `pydantic-settings-vault`) | not catchable by a name check |
+| real | 60 | **0 blocked** |
+
+Overall: 68 of 70 invented names caught (97%). The two misses are the
+slopsquatting case itself — someone already registered the name — and no
+local existence check can see that; it needs reputation signals
+(age, downloads, maintainers), which is what the warn band is for.
+Caveats: 70 names is small, one generator, and the 68/68 is close to
+tautological (absent name -> block); the informative figure is how many
+invented names turn out to be already registered (2 of 70 here).
+
+## Commit latency
+
+Median **91 ms** (worst 105 ms, 20 runs after a warm-up) for `provctl check`
+on a staged `requirements.txt` with 5 deps, including Python interpreter
+startup, on a laptop (macOS). Lookups are local; no network calls.
