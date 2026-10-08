@@ -198,3 +198,23 @@ class TestBandCounts:
         # Phase 1 has no enrichment, so the provenance-sensitive band must be
         # empty rather than estimated.
         assert result.bands.provenance_sensitive == 0
+
+
+def test_first_run_downloads_missing_index(repo, write_and_stage, tmp_path, monkeypatch, capsys):
+    import json
+
+    from provctl.cli import main
+
+    source = tmp_path / "simple.json"
+    source.write_text(json.dumps({
+        "meta": {"_last-serial": 1},
+        "projects": [{"name": "requests"}],
+    }))
+    monkeypatch.setenv("PROVCTL_CACHE_DIR", str(tmp_path / "fresh-cache"))
+    monkeypatch.setenv("PROVCTL_INDEX_SOURCE", str(source))
+    write_and_stage("requirements.txt", "requests\nfastapi-turbo-helper\n")
+
+    rc = main(["check", "--repo", str(repo)])
+
+    assert rc == 1  # blocked: the fake name is absent from the freshly fetched index
+    assert "downloading it once" in capsys.readouterr().err

@@ -1,4 +1,4 @@
-"""Download the PyPI name list. Never called from check."""
+"""Download the PyPI name list. Called from check only when no index exists yet."""
 
 from __future__ import annotations
 

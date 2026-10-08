@@ -35,9 +35,18 @@ def cmd_check(args: argparse.Namespace) -> int:
     policy, store = _load(repo)
 
     if not store.exists():
+        # First run (typically a pre-commit hook in an isolated env, where the
+        # `provctl` command is not on PATH to refresh by hand). This downloads
+        # the whole public name list; no package names leave the machine.
+        print("provctl: no local PyPI index, downloading it once (~12 MB)...", file=sys.stderr)
+        try:
+            refresh_index(store)
+        except Exception as exc:  # noqa: BLE001 - offline etc.; fall back to the manual hint
+            print(f"provctl: automatic download failed: {exc}", file=sys.stderr)
+    if not store.exists():
         print(
             "provctl: no local PyPI index found.\n"
-            "  Run `provctl index refresh` once (about 10 MB, a few seconds).",
+            "  Run `provctl index refresh` once (about 12 MB, a few seconds).",
             file=sys.stderr,
         )
         return 2
