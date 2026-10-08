@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import statistics
 import subprocess
 import sys
@@ -28,12 +29,13 @@ def latency(runs: int = 20) -> tuple[float, float]:
         subprocess.run(cmd, cwd=tmp, check=True)
     (tmp / "requirements.txt").write_text("requests\nnumpy\npandas\nfastapi\nflask\n")
     subprocess.run(["git", "add", "-A"], cwd=tmp, check=True)
+    env = {**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parent.parent)}
     times = []
     for _ in range(runs + 1):
         t = time.perf_counter()
         proc = subprocess.run([sys.executable, "-m", "provctl.cli", "check"], cwd=tmp,
-                              capture_output=True, text=True)
-        if proc.returncode not in (0, 1) or "summary" not in proc.stdout:  # failed run: timing it is meaningless
+                              capture_output=True, text=True, env=env)
+        if proc.returncode not in (0, 1) or proc.stderr.strip():  # failed run: timing it is meaningless
             raise RuntimeError(f"provctl failed: {proc.stderr.strip()}")
         times.append((time.perf_counter() - t) * 1000)
     times = times[1:]  # drop cold start
